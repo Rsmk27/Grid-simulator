@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Grid Simulation Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>⚡ Power Grid Simulation Platform</h1>
+            <p class="subtitle">Web-Based Smart Grid Digital Twin</p>
+            <div class="status-indicator">
+                <span class="status-label">Backend Status:</span>
+                <span id="backendStatus" class="status-badge">Checking...</span>
+                <span class="status-label">Mode:</span>
+                <span id="simulationMode" class="status-badge">-</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Input Controls Section -->
+            <section class="card controls-section">
+                <h2>⚙️ Simulation Controls</h2>
+                <p class="section-description">Adjust load and generation values to simulate grid conditions</p>
+                
+                <div class="input-group">
+                    <label for="loadInput">
+                        <span class="label-text">System Load (MW)</span>
+                        <span class="label-hint">Total power consumption</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        id="loadInput" 
+                        min="0" 
+                        max="10000" 
+                        step="10" 
+                        value="1000"
+                        placeholder="Enter load in MW"
+                    >
+                    <div class="slider-container">
+                        <input 
+                            type="range" 
+                            id="loadSlider" 
+                            min="0" 
+                            max="10000" 
+                            step="10" 
+                            value="1000"
+                        >
+                        <div class="slider-labels">
+                            <span>0 MW</span>
+                            <span>10,000 MW</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="generationInput">
+                        <span class="label-text">System Generation (MW)</span>
+                        <span class="label-hint">Total power production</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        id="generationInput" 
+                        min="0" 
+                        max="10000" 
+                        step="10" 
+                        value="1000"
+                        placeholder="Enter generation in MW"
+                    >
+                    <div class="slider-container">
+                        <input 
+                            type="range" 
+                            id="generationSlider" 
+                            min="0" 
+                            max="10000" 
+                            step="10" 
+                            value="1000"
+                        >
+                        <div class="slider-labels">
+                            <span>0 MW</span>
+                            <span>10,000 MW</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="runSimulation" class="btn btn-primary">
+                        <span class="btn-icon">▶</span>
+                        Run Simulation
+                    </button>
+                    <button id="resetInputs" class="btn btn-secondary">
+                        <span class="btn-icon">↻</span>
+                        Reset
+                    </button>
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="card results-section" id="resultsSection" style="display: none;">
+                <h2>📊 Simulation Results</h2>
+                
+                <!-- Stability Status Banner -->
+                <div id="stabilityBanner" class="stability-banner">
+                    <div class="stability-status">
+                        <span id="stabilityIcon" class="status-icon">●</span>
+                        <span id="stabilityText" class="status-text">STABLE</span>
+                    </div>
+                    <div id="warningMessage" class="warning-text"></div>
+                </div>
+
+                <!-- Key Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Power Imbalance</div>
+                        <div id="powerImbalance" class="metric-value">0.0 MW</div>
+                        <div class="metric-description">Generation - Load</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">System Frequency</div>
+                        <div id="frequency" class="metric-value">60.0000 Hz</div>
+                        <div id="frequencyDeviation" class="metric-description">0.0000 Hz deviation</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Voltage</div>
+                        <div id="voltage" class="metric-value">1.0000 pu</div>
+                        <div class="metric-description">Per-unit voltage</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Efficiency</div>
+                        <div id="efficiency" class="metric-value">100.0%</div>
+                        <div class="metric-description">System efficiency</div>
+                    </div>
+                </div>
+
+                <!-- Detailed Results -->
+                <div class="details-section">
+                    <h3>Detailed Information</h3>
+                    <table class="results-table">
+                        <tr>
+                            <td class="table-label">Load:</td>
+                            <td id="resultLoad" class="table-value">-</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Generation:</td>
+                            <td id="resultGeneration" class="table-value">-</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Stability Index:</td>
+                            <td id="stabilityIndex" class="table-value">-</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Simulation Time:</td>
+                            <td id="timestamp" class="table-value">-</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Simulation Mode:</td>
+                            <td id="resultMode" class="table-value">-</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Quick Scenarios -->
+            <section class="card scenarios-section">
+                <h2>🎯 Quick Test Scenarios</h2>
+                <p class="section-description">Try these predefined scenarios</p>
+                <div class="scenarios-grid">
+                    <button class="scenario-btn" data-load="1000" data-gen="1000">
+                        <span class="scenario-name">Balanced</span>
+                        <span class="scenario-desc">Load = Generation</span>
+                    </button>
+                    <button class="scenario-btn" data-load="1000" data-gen="1050">
+                        <span class="scenario-name">Slight Surplus</span>
+                        <span class="scenario-desc">+50 MW</span>
+                    </button>
+                    <button class="scenario-btn" data-load="1000" data-gen="900">
+                        <span class="scenario-name">Slight Deficit</span>
+                        <span class="scenario-desc">-100 MW</span>
+                    </button>
+                    <button class="scenario-btn" data-load="1000" data-gen="1150">
+                        <span class="scenario-name">Critical Surplus</span>
+                        <span class="scenario-desc">+150 MW</span>
+                    </button>
+                    <button class="scenario-btn" data-load="5000" data-gen="5000">
+                        <span class="scenario-name">High Load</span>
+                        <span class="scenario-desc">5000 MW</span>
+                    </button>
+                    <button class="scenario-btn" data-load="100" data-gen="105">
+                        <span class="scenario-name">Low Load</span>
+                        <span class="scenario-desc">100 MW</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Power Grid Simulation Platform v1.0.0</p>
+            <p>Built with MATLAB 2023b, FastAPI, and Modern Web Technologies</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loader"></div>
+        <p>Running simulation...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
