@@ -48,6 +48,8 @@ function result = grid_simulation(load_mw, generation_mw)
     system_frequency = NOMINAL_FREQUENCY + frequency_deviation;
     
     % Calculate voltage stability (simplified model)
+    % NOTE: This is a simplified linear model for demonstration purposes.
+    % Real power systems require complex power flow equations.
     % Assumes voltage drops with power deficit, rises with surplus
     voltage_pu = VOLTAGE_BASE + (power_imbalance * VOLTAGE_SENSITIVITY);
     voltage_pu = max(0.85, min(1.15, voltage_pu)); % Clamp between 0.85 and 1.15 pu

@@ -296,9 +296,12 @@ function showLoading(show) {
  * Handle keyboard shortcuts
  */
 document.addEventListener('keydown', function(event) {
-    // Enter key to run simulation
+    // Only handle Enter if focus is on an input or the document body
     if (event.key === 'Enter' && !runSimulationBtn.disabled) {
-        runSimulation();
+        const target = event.target;
+        if (target.tagName === 'INPUT' || target === document.body) {
+            runSimulation();
+        }
     }
     
     // Escape key to close results
